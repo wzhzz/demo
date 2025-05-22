@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        .a{
+            width: 800px;
+            height: 400px;
+            margin: 40px auto;
+            background-color: aquamarine;
+        }
+        .c{
+            margin: 20px auto;
+            text-align: center;
+            line-height: 200px;
+            width: 400px;
+            height: 200px;
+            background-color: white;
+        }
+
+        input{
+            width: 100px;
+        }
+        button{
+            width: 60px;
+        }
+
+
+    </style>
+
+
+</head>
+
+<body>
+
+    <div class="a">
+        <p>
+            请输入要上班的时间:
+            <span>
+               <input type="number" value="" id="a1"> 时
+               <input type="number" value="" id="a2"> 分
+               <input type="number" value="" id="a3"> 秒
+               
+            </span>
+            <span>
+                <button onclick="js()">点击</button>
+            </span>
+
+        </p>
+
+
+        <div class="c">😊</div>
+
+    </div>
+    <script>
+        
+        function js(){
+           let a1 = parseInt(document.getElementById("a1").value) || 0;
+           let a2 = parseInt(document.getElementById("a2").value) || 0;
+           let a3 = parseInt(document.getElementById("a3").value) || 0;
+
+
+            const current =new  Date(); 
+
+            const date1 = new Date( current.getFullYear(),    // 年
+            current.getMonth(),       // 月（0-11）
+            current.getDate(), a1, a2, a3);
+
+            let  time =date1.getTime()-current.getTime();
+            
+            
+            let c=document.querySelector(".c");
+            
+            time=time/1000/60;
+            const rounded = time.toFixed(2);
+
+            c.innerHTML="近距上班还有："+rounded+"分钟";
+
+
+        }
+
+
+
+
+    </script>
+
+
+
+
+    
+</body>
+</html>
