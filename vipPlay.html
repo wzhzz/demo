@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VIP追剧神器</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- 配置Tailwind自定义颜色和字体 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3B82F6',
+            secondary: '#10B981',
+            accent: '#8B5CF6',
+            danger: '#EF4444',
+            dark: '#1F2937',
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .btn-hover {
+        @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen font-inter">
+  <!-- 顶部导航 -->
+  <header class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fa fa-play-circle text-primary text-2xl"></i>
+        <h1 class="text-xl font-bold text-dark">VIP追剧神器</h1>
+      </div>
+      <div class="flex items-center space-x-4">
+        <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+          <i class="fa fa-moon-o text-gray-600"></i>
+        </button>
+        <button id="about-btn" class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+          <i class="fa fa-info-circle text-gray-600"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- 卡片容器 -->
+    <div class="bg-white rounded-2xl shadow-md p-6 mb-8 transform transition-all duration-300 hover:shadow-lg">
+      <!-- 输入区域 -->
+      <div class="mb-6">
+        <label for="video-url" class="block text-sm font-medium text-gray-700 mb-2">输入视频网址：</label>
+        <div class="flex">
+          <input 
+            type="text" 
+            id="video-url" 
+            class="flex-1 px-4 py-3 rounded-l-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
+            placeholder="https://v.qq.com/x/cover/xxxxxx.html"
+          >
+          <button id="clear-btn" class="bg-gray-100 hover:bg-gray-200 px-4 py-3 rounded-r-lg transition-colors">
+            <i class="fa fa-eraser text-gray-600"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 平台选择 -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <button id="iqiyi-btn" class="platform-btn bg-red-50 hover:bg-red-100 text-red-600 p-4 rounded-xl transition-all flex flex-col items-center btn-hover">
+          <i class="fa fa-play-circle text-2xl mb-2"></i>
+          <span>爱奇艺</span>
+        </button>
+        <button id="tencent-btn" class="platform-btn bg-blue-50 hover:bg-blue-100 text-blue-600 p-4 rounded-xl transition-all flex flex-col items-center btn-hover">
+          <i class="fa fa-play-circle text-2xl mb-2"></i>
+          <span>腾讯视频</span>
+        </button>
+        <button id="youku-btn" class="platform-btn bg-orange-50 hover:bg-orange-100 text-orange-600 p-4 rounded-xl transition-all flex flex-col items-center btn-hover">
+          <i class="fa fa-play-circle text-2xl mb-2"></i>
+          <span>优酷视频</span>
+        </button>
+        <button id="mgtv-btn" class="platform-btn bg-purple-50 hover:bg-purple-100 text-purple-600 p-4 rounded-xl transition-all flex flex-col items-center btn-hover">
+          <i class="fa fa-play-circle text-2xl mb-2"></i>
+          <span>芒果TV</span>
+        </button>
+      </div>
+
+      <!-- 播放按钮 -->
+      <div class="text-center">
+        <button id="play-btn" class="bg-gradient-to-r from-primary to-accent text-white font-bold py-3 px-8 rounded-full shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-1 flex items-center mx-auto">
+          <i class="fa fa-play-circle mr-2"></i>
+          <span>播放VIP视频</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 提示信息 -->
+    <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg mb-8">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <i class="fa fa-exclamation-triangle text-red-500"></i>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-red-700">
+            提示：本工具仅供学习交流使用，请支持正版视频平台。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 播放源选择 -->
+    <div class="bg-white rounded-2xl shadow-md p-6 mb-8">
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">备用播放源</h2>
+      <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <button class="play-source bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 px-4 rounded-lg transition-colors text-sm flex items-center justify-center">
+          <i class="fa fa-server mr-2"></i> 极速源
+        </button>
+        <button class="play-source bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 px-4 rounded-lg transition-colors text-sm flex items-center justify-center">
+          <i class="fa fa-server mr-2"></i> 高清源
+        </button>
+        <button class="play-source bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 px-4 rounded-lg transition-colors text-sm flex items-center justify-center">
+          <i class="fa fa-server mr-2"></i> 稳定源
+        </button>
+        <button class="play-source bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 px-4 rounded-lg transition-colors text-sm flex items-center justify-center">
+          <i class="fa fa-server mr-2"></i> 蓝光源
+        </button>
+        <button class="play-source bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 px-4 rounded-lg transition-colors text-sm flex items-center justify-center">
+          <i class="fa fa-server mr-2"></i> 多语言源
+        </button>
+        <button class="play-source bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 px-4 rounded-lg transition-colors text-sm flex items-center justify-center">
+          <i class="fa fa-server mr-2"></i> 海外源
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-white py-6">
+    <div class="container mx-auto px-4 text-center text-sm">
+      <p>© 2023 VIP追剧神器 - 仅供学习交流使用</p>
+      <p class="mt-2 text-gray-400">本工具不提供任何视频内容，所有视频均来自第三方平台</p>
+    </div>
+  </footer>
+
+  <!-- 关于弹窗 -->
+  <div id="about-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0" id="modal-content">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-gray-800">关于VIP追剧神器</h3>
+        <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      <div class="text-gray-600 space-y-3">
+        <p>本工具是一个学习交流项目，用于演示如何通过解析视频链接实现VIP视频播放功能。</p>
+        <p>请注意：</p>
+        <ul class="list-disc pl-5">
+          <li>本工具不存储任何视频内容</li>
+          <li>所有视频资源均来自第三方平台</li>
+          <li>请支持正版，如需观看高清完整内容，请购买官方会员</li>
+          <li>禁止用于商业用途</li>
+        </ul>
+      </div>
+      <div class="mt-6 text-center">
+        <button id="confirm-modal" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors">
+          我知道了
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 播放器列表
+    const platforms = {
+      iqiyi: 'https://www.iqiyi.com',
+      tencent: 'https://v.qq.com',
+      youku: 'https://www.youku.com',
+      mgtv: 'https://www.mgtv.com'
+    };
+    
+    // 播放源列表
+    const playSources = [
+      'https://jx.xmflv.cc/?url=',
+      'https://jx.bozrc.com:4433/player/?url=',
+      'https://jx.playerjy.com/?url=',
+      'https://jx.bozrc.com:4433/player/?url='
+    ];
+    
+    // 默认使用第一个播放源
+    let currentPlaySource = playSources[0];
+    
+    // DOM元素
+    const videoUrlInput = document.getElementById('video-url');
+    const clearBtn = document.getElementById('clear-btn');
+    const playBtn = document.getElementById('play-btn');
+    const aboutBtn = document.getElementById('about-btn');
+    const closeModalBtn = document.getElementById('close-modal');
+    const confirmModalBtn = document.getElementById('confirm-modal');
+    const aboutModal = document.getElementById('about-modal');
+    const modalContent = document.getElementById('modal-content');
+    const themeToggle = document.getElementById('theme-toggle');
+    const platformBtns = document.querySelectorAll('.platform-btn');
+    const playSourceBtns = document.querySelectorAll('.play-source');
+    
+    // 清空输入框
+    clearBtn.addEventListener('click', () => {
+      videoUrlInput.value = '';
+      videoUrlInput.focus();
+    });
+    
+    // 平台按钮点击事件
+    platformBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const platform = btn.id.split('-')[0];
+        if (platforms[platform]) {
+          videoUrlInput.value = platforms[platform];
+        }
+      });
+    });
+    
+    // 播放源选择
+    playSourceBtns.forEach((btn, index) => {
+      btn.addEventListener('click', () => {
+        // 移除所有选中状态
+        playSourceBtns.forEach(b => b.classList.remove('bg-primary/10', 'text-primary'));
+        // 添加选中状态
+        btn.classList.add('bg-primary/10', 'text-primary');
+        // 更新当前播放源
+        currentPlaySource = playSources[index];
+      });
+    });
+    
+    // 播放视频
+    playBtn.addEventListener('click', () => {
+      const videoUrl = videoUrlInput.value.trim();
+      if (!videoUrl) {
+        alert('请输入视频网址');
+        return;
+      }
+      
+      // 验证URL格式
+      try {
+        new URL(videoUrl);
+      } catch (error) {
+        alert('请输入有效的视频网址');
+        return;
+      }
+      
+      // 打开播放页面
+      window.open(currentPlaySource + encodeURIComponent(videoUrl), '_blank');
+    });
+    
+    // 关于弹窗
+    aboutBtn.addEventListener('click', () => {
+      aboutModal.classList.remove('hidden');
+      // 添加动画效果
+      setTimeout(() => {
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+      }, 10);
+    });
+    
+    // 关闭弹窗
+    function closeModal() {
+      modalContent.classList.remove('scale-100', 'opacity-100');
+      modalContent.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => {
+        aboutModal.classList.add('hidden');
+      }, 300);
+    }
+    
+    closeModalBtn.addEventListener('click', closeModal);
+    confirmModalBtn.addEventListener('click', closeModal);
+    
+    // 暗色模式切换
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      const isDarkMode = document.body.classList.contains('dark-mode');
+      
+      if (isDarkMode) {
+        document.body.classList.add('bg-gray-900', 'text-white');
+        document.body.classList.remove('bg-gradient-to-br', 'from-gray-50', 'to-gray-100');
+        themeToggle.innerHTML = '<i class="fa fa-sun-o text-yellow-400"></i>';
+      } else {
+        document.body.classList.remove('bg-gray-900', 'text-white');
+        document.body.classList.add('bg-gradient-to-br', 'from-gray-50', 'to-gray-100');
+        themeToggle.innerHTML = '<i class="fa fa-moon-o text-gray-600"></i>';
+      }
+      
+      // 更新卡片背景色
+      const cards = document.querySelectorAll('.bg-white');
+      cards.forEach(card => {
+        if (isDarkMode) {
+          card.classList.add('bg-gray-800');
+          card.classList.remove('bg-white');
+        } else {
+          card.classList.remove('bg-gray-800');
+          card.classList.add('bg-white');
+        }
+      });
+      
+      // 更新文本颜色
+      const textElements = document.querySelectorAll('.text-gray-700, .text-gray-600, .text-gray-800');
+      textElements.forEach(el => {
+        if (isDarkMode) {
+          el.classList.add('text-gray-200');
+          el.classList.remove('text-gray-700', 'text-gray-600', 'text-gray-800');
+        } else {
+          el.classList.remove('text-gray-200');
+          el.classList.add('text-gray-700', 'text-gray-600', 'text-gray-800');
+        }
+      });
+      
+      // 更新提示框背景色
+      const alertBox = document.querySelector('.bg-red-50');
+      if (alertBox) {
+        if (isDarkMode) {
+          alertBox.classList.add('bg-red-900/20');
+          alertBox.classList.remove('bg-red-50');
+        } else {
+          alertBox.classList.remove('bg-red-900/20');
+          alertBox.classList.add('bg-red-50');
+        }
+      }
+      
+      // 更新平台按钮背景色
+      platformBtns.forEach(btn => {
+        if (isDarkMode) {
+          btn.classList.add('bg-gray-700/50');
+          btn.classList.remove('bg-red-50', 'bg-blue-50', 'bg-orange-50', 'bg-purple-50');
+        } else {
+          btn.classList.remove('bg-gray-700/50');
+          if (btn.id === 'iqiyi-btn') btn.classList.add('bg-red-50');
+          if (btn.id === 'tencent-btn') btn.classList.add('bg-blue-50');
+          if (btn.id === 'youku-btn') btn.classList.add('bg-orange-50');
+          if (btn.id === 'mgtv-btn') btn.classList.add('bg-purple-50');
+        }
+      });
+    });
+    
+    // 输入框按Enter键触发播放
+    videoUrlInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        playBtn.click();
+      }
+    });
+    
+    // 页面加载完成后，自动聚焦到输入框
+    window.addEventListener('load', () => {
+      videoUrlInput.focus();
+    });
+  </script>
+</body>
+</html>    
